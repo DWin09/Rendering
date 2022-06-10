@@ -25,20 +25,29 @@ void Object::initModelMatrix()
 void Object::getTris(std::vector<Triangle> &result)
 {
 	Triangle tri;
+	/*std::vector<Triangle> tmp;
+	tmp.reserve(result.size() + this->tris.size());
+	for (int i = 0; i < result.size(); i++)
+	{
+		tmp.emplace_back(result.at(i));
+	}
+	*/
+	//result.resize(result.size() + this->tris.size());
 	for (int i = 0; i < this->tris.size(); i++)
 	{
 		this->tris.at(i).project(this->modelMatrix, tri);
-		result.push_back(tri);
+		result.emplace_back(tri);
 	}
+	//result = tmp;
 }
 void Object::move(double x, double y, double z)
 {
 
 	std::vector<std::vector<double>> moveMatrix, resultMatrix;
-
+	moveMatrix.reserve(4);
 	for (int i = 0; i < 4; i++)
 	{
-		moveMatrix.push_back(std::vector<double>(4, 0));
+		moveMatrix.emplace_back(std::vector<double>(4, 0));
 		moveMatrix.at(i).at(i) = 1;
 	}
 	moveMatrix.at(0).at(3) = x;
@@ -73,6 +82,10 @@ void Object::rotateY(double degree)
 	double cosVal = cos(rad);
 	double sinVal = sin(rad);
 	std::vector<std::vector<double>> matrix;
+	/*for (int i = 0; i < 4; i++)
+	{
+
+	}*/
 	for (int i = 0; i < 4; i++)
 	{
 		matrix.push_back(std::vector<double>(4, 0));
@@ -112,14 +125,15 @@ void Object::rotate(std::vector<std::vector<double>>& matrix)
 	{
 		tmpMatrix.push_back(std::vector<double>(4, 0));
 	}
-
+	matMul(this->modelMatrix, matrix, tmpMatrix);
+	/*
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
 			tmpMatrix.at(i).at(j) += this->modelMatrix.at(j).at(i) * matrix.at(i).at(j);
 		}
-	}
+	}*/
 	this->modelMatrix = tmpMatrix;
 }
 void Object::rotateLocalX(double degree)

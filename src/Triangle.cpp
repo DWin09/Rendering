@@ -7,9 +7,13 @@
 
 Triangle::Triangle(Point p1, Point p2, Point p3, std::vector<int> color)
 {
-	this->points.push_back(p1);
-	this->points.push_back(p2);
-	this->points.push_back(p3);
+	this->points.reserve(3);
+	//this->points.emplace_back(p1.position.at(0), p1.position.at(1), p1.position.at(2));
+	//this->points.emplace_back(p2.position.at(0), p2.position.at(1), p2.position.at(2));
+	//this->points.emplace_back(p3.position.at(0), p3.position.at(1), p3.position.at(2));
+	this->points.emplace_back(p1);
+	this->points.emplace_back(p2);
+	this->points.emplace_back(p3);
 	this->calcBarycentric();
 	this->color = color;
 }
@@ -108,7 +112,6 @@ bool Triangle::pointToBarycentric(Point &p)
 	p.subPointNew(this->points.at(0),this->v2);
 	this->d20 = this->v2.dotProduct(this->v0);
 	this->d21 = this->v2.dotProduct(this->v1);
-
 	v = (this->d11 * this->d20 - this->d01 * this->d21) * this->inverseDenomentator;
 	if (v > 1 || v < 0)
 	{
@@ -138,7 +141,6 @@ void Triangle::calcBarycentric()
 	this->d00 = this->v0.dotProduct(this->v0);
 	this->d01 = this->v0.dotProduct(this->v1);
 	this->d11 = this->v1.dotProduct(this->v1);
-
 	this->inverseDenomentator = 1 / (this->d00 * this->d11 - this->d01 * this->d01);
 }
 

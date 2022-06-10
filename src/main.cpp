@@ -11,8 +11,8 @@
 #include "Object.hpp"
 #include "Camera.hpp"
 
-int width = 500;
-int height = 500;
+int width = 1000;
+int height = 1000;
 double invWidth = 2.f / width; //2.f because frustrum from -1 to 1
 double invHeight = 2.f / height;
 std::vector<Object> objects = std::vector<Object>();
@@ -49,6 +49,7 @@ void idle() {
         {
             cam.move(moveVals);
         }
+        //objects.at(0).rotateLocalY(6);
         last = current;
         frames++;
         glutPostRedisplay();
@@ -80,14 +81,18 @@ void display() {
     int t = -1;
     int collisionTri = -1;
     bool miss = true;
+    int triNumber = allTris.size();
     allTris.clear();
     visibleTris.clear();
+    allTris.reserve(triNumber);
     for (int i = 0; i < objects.size(); i++)
     {
         objects.at(i).getTris(allTris);
     }
     Point min, max;
     Triangle tri;
+    visibleTris.reserve(allTris.size());
+    int numVisibleTris = 0;
     for (int i = 0; i < allTris.size(); i++)
     {
         cam.toScreenSpace(allTris.at(i),tri);
@@ -95,27 +100,29 @@ void display() {
         {
             continue;
         }
-        if (tri.normal.position.at(2) > 0)
+        if (tri.normal.position.at(2) < 0)
         {
-            min = tri.__boundingBox.at(0);
-            max = tri.__boundingBox.at(1);
-            if (min.position.at(0) > -widthOffset || max.position.at(0) < widthOffset)
-            {
-                continue;
-            }
-            if (min.position.at(1) > -heightOffset || max.position.at(1) < heightOffset)
-            {
-                continue;
-            }
-            visibleTris.push_back(tri);
+            continue;
         }
+        min = tri.__boundingBox.at(0);
+        max = tri.__boundingBox.at(1);
+        if (min.position.at(0) > -widthOffset || max.position.at(0) < widthOffset)
+        {
+            continue;
+        }
+        if (min.position.at(1) > -heightOffset || max.position.at(1) < heightOffset)
+        {
+            continue;
+        }
+        visibleTris.emplace_back(tri);
+        numVisibleTris++;
     }
     double minX, maxX, minY, maxY;
     minX = 1;
     maxX = -1;
     minY = 1;
     maxY = -1;
-    for (int i = 0; i < visibleTris.size(); i++)
+    for (int i = 0; i < numVisibleTris; i++)
     {
         if (visibleTris.at(i).minX() < minX)
         {
@@ -171,7 +178,7 @@ void display() {
             //currentX *= invWidth;
             buf = 1000000000;
             miss = true;
-            for (t = 0; t < visibleTris.size(); t++)
+            for (t = 0; t < numVisibleTris; t++)
             {
                 if (!visibleTris.at(t).withinBoundingBox(currentX, currentY))
                 {
@@ -461,11 +468,14 @@ void init()
     t.push_back(Triangle(p.at(0), p.at(4), p.at(1), color));
     t.push_back(Triangle(p.at(1), p.at(4), p.at(5), color));
     objects.push_back(Object(t));
-    t.clear();
-    objects.at(0).getTris(t);
-    std::cout << t.size() << std::endl;
-
-
+    //t.clear();
+    //objects.at(0).getTris(t);
+    objects.at(0).rotateLocalY(45);
+    objects.at(0).rotateLocalX(55);
+    //objects.at(0).rotateLocalX(45);
+    moveVals = Point(0, 0, -5);
+    cam.move(moveVals);
+    moveVals = Point(0, 0, 0);
 
 }
 

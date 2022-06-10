@@ -119,9 +119,15 @@ Point* Point::normalize()
 
 double Point::dotProduct(Point &p)
 {
-	return this->position.at(0) * p.position.at(0) +
-		this->position.at(1) * p.position.at(1) +
-		this->position.at(2) * p.position.at(2);
+	double result = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		result += this->position.at(i) * p.position.at(i);
+	}
+	return result;
+	/*return this->position.at(0) * p.position.at(0) +
+			this->position.at(1) * p.position.at(1) +
+			this->position.at(2) * p.position.at(2);*/
 }
 
 void Point::crossProduct(Point &p, Point &result)

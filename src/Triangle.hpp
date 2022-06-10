@@ -5,6 +5,8 @@
 
 #include "Point.hpp"
 #include <vector>
+#include <iostream>
+#include <cstdlib>
 
 class Triangle
 {

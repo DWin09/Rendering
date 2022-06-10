@@ -10,6 +10,8 @@ Camera::Camera(double fov, double aspect, double near, double far)
 		this->projectionMatrix.push_back(std::vector<double>(4, 0));
 		this->rotMatrix.push_back(std::vector<double>(4, 0));
 		this->cameraMatrix.push_back(std::vector<double>(4, 0));
+		this->tmpMatrix1.push_back(std::vector<double>(4, 0));
+		this->tmpMatrix2.push_back(std::vector<double>(4, 0));
 		this->cameraMatrix.at(i).at(i) = 1;
 		this->rotMatrix.at(i).at(i) = 1;
 	}
@@ -30,9 +32,18 @@ void Camera::toCameraSpace(Triangle& tri, Triangle& result)
 }
 void Camera::toScreenSpace(Triangle& tri, Triangle &result)
 {
+	/*
 	Triangle tmp;
 	this->toCameraSpace(tri, tmp);
-	tmp.project(this->projectionMatrix, result);
+	tmp.project(this->projectionMatrix, result);*/
+	if (this->recalc)
+	{
+
+		matMul(this->cameraMatrix, this->rotMatrix, this->tmpMatrix1);
+		matMul(this->projectionMatrix, this->tmpMatrix1, this->tmpMatrix2);
+		this->recalc = false;
+	}
+	tri.project(this->tmpMatrix2, result);
 }
 void Camera::move(double right, double up, double forward)
 {
@@ -52,6 +63,7 @@ void Camera::move(Point &vel)
 	matMul(matrix, this->cameraMatrix, tmp);
 	this->cameraMatrix = tmp;
 
+	this->recalc = true;
 }
 void Camera::rotateX(double degree)
 {
@@ -124,11 +136,8 @@ void Camera::rotate(std::vector<std::vector<double>>& matrix)
 
 	std::vector<std::vector<double>> tmpMatrix;
 
-	for (int i = 0; i < 4; i++)
-	{
-		tmpMatrix.push_back(std::vector<double>(4, 0));
-	}
 
 	matMul(matrix, this->cameraMatrix, tmpMatrix);
 	this->cameraMatrix = tmpMatrix;
+	this->recalc = true;
 }

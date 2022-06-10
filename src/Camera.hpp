@@ -11,7 +11,8 @@ class Camera
 {
 
 private:
-	std::vector<std::vector<double>> cameraMatrix, projectionMatrix, rotMatrix;
+	std::vector<std::vector<double>> cameraMatrix, projectionMatrix, rotMatrix, tmpMatrix1, tmpMatrix2;
+	bool recalc = false;
 public:
 	Camera(double fov, double aspect,double near, double far);
 	void toCameraSpace(Triangle& tri, Triangle &result);
